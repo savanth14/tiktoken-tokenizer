@@ -78,7 +78,7 @@ import random
 #             json.dump(sample, f)
 #             f.write("\n")
 
-dataset = load_dataset("ai4bharat/sangraha", data_files=["verified/tel/data-0.parquet", "verified/tel/data-10.parquet", "verified/tel/data-20.parquet", "verified/tel/data-30.parquet", "verified/tel/data-40.parquet", "verified/tel/data-41.parquet"], split="train")
+dataset = load_dataset("ai4bharat/sangraha", data_files=["verified/tel/data-0.parquet", "verified/tel/data-10.parquet", "verified/tel/data-20.parquet", "verified/tel/data-30.parquet", "verified/tel/data-40.parquet"], split="train")
 
 num_samples = len(dataset)
 
