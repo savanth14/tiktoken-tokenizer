@@ -1,3 +1,4 @@
+# Modified the script to run only on multilingual dataset script 
 import argparse
 import json
 import logging
@@ -39,24 +40,25 @@ def token_string_to_bytes(s: str) -> bytes:
 class TrainBPETokenizerArgs:
     output_dir: str
 
-    english_datasets: str = "data/english/train"
-    code_datasets: str = "data/code/train"
-    multilingual_datasets: str = "data/multilingual/train"
+    # english_datasets: str = "data/english/train" # commented out
+    # code_datasets: str = "data/code/train" # commented out
+    multilingual_datasets: str = "data/multilingual/train" # TO BE CHANGED 
 
     num_characters: int = 1_000_000_000
-    vocab_size: int = 64_000
+    vocab_size: int = 16_000 # modified from 64_000 to 16_000
     max_sentencepiece_length: int = 128
     normalization_rule_name: str = "gpt"
-    code_percentage: float = 0.1
-    multilingual_percentage: float = 0.1
+    code_percentage: float = 0.0 # modified from 0.1 to 0
+    multilingual_percentage: float = 1.0 # modified from 0.1 to 1.0
 
     output_name: Optional[str] = None
 
     def __post_init__(self):
         datasets = (
-            self.english_datasets.split(",")
-            + self.code_datasets.split(",")
-            + self.multilingual_datasets.split(",")
+            self.multilingual_datasets.split(",") # new line added
+            # self.english_datasets.split(",") # commented out
+            # + self.code_datasets.split(",") # commented out
+            # + self.multilingual_datasets.split(",") # commented out
         )
         for ckpt in datasets:
             checkpoint_dir = Path(ckpt)
@@ -121,25 +123,25 @@ def jsonl_content_iterator(
 
 def mix_jsonl_content_iterator(args: TrainBPETokenizerArgs):
     datasets = []
-    code_datasets = args.code_datasets.split(",")
+    # code_datasets = args.code_datasets.split(",") # commented out
     mp_datasets = args.multilingual_datasets.split(",")
-    en_datasets = args.english_datasets.split(",")
-    for dataset in code_datasets:
-        if args.code_percentage > 0:
-            datasets.append((dataset, args.code_percentage / len(code_datasets)))
+    # en_datasets = args.english_datasets.split(",") # commented out
+    # for dataset in code_datasets: # commented out
+    #     if args.code_percentage > 0:
+    #         datasets.append((dataset, args.code_percentage / len(code_datasets)))
 
     for dataset in mp_datasets:
         if args.multilingual_percentage > 0:
             datasets.append((dataset, args.multilingual_percentage / len(mp_datasets)))
-    for dataset in en_datasets:
-        if (1 - args.code_percentage - args.multilingual_percentage) > 0:
-            datasets.append(
-                (
-                    dataset,
-                    (1 - args.code_percentage - args.multilingual_percentage)
-                    / len(en_datasets),
-                )
-            )
+    # for dataset in en_datasets: # commented out
+    #     if (1 - args.code_percentage - args.multilingual_percentage) > 0:
+    #         datasets.append(
+    #             (
+    #                 dataset,
+    #                 (1 - args.code_percentage - args.multilingual_percentage)
+    #                 / len(en_datasets),
+    #             )
+    #         )
 
     # Create iterators
     iterators = []
@@ -257,20 +259,20 @@ if __name__ == "__main__":
         required=True,
         help="The directory to save the tokenizer to",
     )
-    parser_train.add_argument(
-        "--english-datasets",
-        type=str,
-        default="data/english/train",
-    )
-    parser_train.add_argument(
-        "--code-datasets",
-        type=str,
-        default="data/code/train",
-    )
+    # parser_train.add_argument(
+    #     "--english-datasets",
+    #     type=str,
+    #     default="data/english/train",
+    # )
+    # parser_train.add_argument(
+    #     "--code-datasets",
+    #     type=str,
+    #     default="data/code/train",
+    # )
     parser_train.add_argument(
         "--multilingual-datasets",
         type=str,
-        default="data/multilingual/train",
+        default="data/multilingual/train", # TO BE CHANGED 
     )
     parser_train.add_argument(
         "--num-characters",
@@ -281,7 +283,7 @@ if __name__ == "__main__":
     parser_train.add_argument(
         "--vocab-size",
         type=int,
-        default=64_000,
+        default=16_000, # Modified from 64_000 to 16_000
         help="The number of characters to train on",
     )
     parser_train.add_argument(
@@ -293,19 +295,19 @@ if __name__ == "__main__":
     parser_train.add_argument(
         "--normalization-rule-name",
         type=str,
-        default="gpt",
+        default="identity", # Modified from "gpt" to "identity"
         help="The normalization rule to use",
     )
     parser_train.add_argument(
         "--code-percentage",
         type=float,
-        default=0.1,
+        default=0.0, # Modified from 0.1 to 0.0
         help="The percentage of code to use",
     )
     parser_train.add_argument(
         "--multilingual-percentage",
         type=float,
-        default=0.1,
+        default=1.0, # Modified from 0.1 to 1.0
         help="The percentage of multilingual to use",
     )
     parser_train.add_argument(
@@ -319,8 +321,8 @@ if __name__ == "__main__":
     if args.command == "train":
         train_cfg = TrainBPETokenizerArgs(
             output_dir=args.output_dir,
-            english_datasets=args.english_datasets,
-            code_datasets=args.code_datasets,
+            # english_datasets=args.english_datasets, # commented out
+            # code_datasets=args.code_datasets, # commented out
             multilingual_datasets=args.multilingual_datasets,
             num_characters=args.num_characters,
             vocab_size=args.vocab_size,
