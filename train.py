@@ -47,7 +47,7 @@ class TrainBPETokenizerArgs:
     num_characters: int = 1_000_000_000
     vocab_size: int = 16_000 # modified from 64_000 to 16_000
     max_sentencepiece_length: int = 128
-    normalization_rule_name: str = "gpt"
+    normalization_rule_name: str = "identity" # modified from "gpt" to "identity"
     code_percentage: float = 0.0 # modified from 0.1 to 0
     multilingual_percentage: float = 1.0 # modified from 0.1 to 1.0
 
@@ -313,7 +313,7 @@ if __name__ == "__main__":
     parser_train.add_argument(
         "--output-name",
         type=str,
-        default=None,
+        default="tiktoken_telugu", # modified from None to "tiktoken_telugu"
         help="The name of the output tokenizer",
     )
     args = parser.parse_args()
